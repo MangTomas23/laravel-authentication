@@ -55,6 +55,7 @@ class LoginController extends Controller
 
       }else{
 
+
         if($this->isEmailExists($socialiteUser->email)) {
           return redirect('/login')->with('emailExists', $socialiteUser->email);
         }
@@ -97,6 +98,15 @@ class LoginController extends Controller
           $socialiteUser = Socialite::driver($provider)->user();
           $user->firstname = $socialiteUser->getRaw()['name']['givenName'];
           $user->lastname = $socialiteUser->getRaw()['name']['familyName'];
+          $user->social_id = $socialiteUser->getId();
+          $user->email = $socialiteUser->getEmail();
+          break;
+        case 'twitter':
+          $socialiteUser = Socialite::driver($provider)->user();
+          $name = explode(' ', $socialiteUser->getName());
+          $firstname = array_slice($name, 0, -1);
+          $user->firstname = implode(' ', $firstname);
+          $user->lastname = $name[count($name) - 1];
           $user->social_id = $socialiteUser->getId();
           $user->email = $socialiteUser->getEmail();
           break;
